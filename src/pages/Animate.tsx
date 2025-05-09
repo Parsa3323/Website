@@ -50,11 +50,11 @@ export default function Animate() {
   const exportAnimation = () => {
     try {
       const cleanedFrames = frames.map(frame => ({
-        head: { ...frame.head },
-        left_arm: { ...frame.left_arm },
-        right_arm: { ...frame.right_arm },
-        left_leg: { ...frame.left_leg },
-        right_leg: { ...frame.right_leg }
+        head: { x: frame.head.x, y: frame.head.y, z: frame.head.z },
+        left_arm: { x: frame.left_arm.x, y: frame.left_arm.y, z: frame.left_arm.z },
+        right_arm: { x: frame.right_arm.x, y: frame.right_arm.y, z: frame.right_arm.z },
+        left_leg: { x: frame.left_leg.x, y: frame.left_leg.y, z: frame.left_leg.z },
+        right_leg: { x: frame.right_leg.x, y: frame.right_leg.y, z: frame.right_leg.z }
       }));
 
       const animation = {
@@ -70,14 +70,15 @@ export default function Animate() {
       const yamlStr = yaml.dump(animation, {
         indent: 2,
         lineWidth: -1,
-        noRefs: true
+        noRefs: true,
+        quotingType: '"'
       });
       
       const blob = new Blob([yamlStr], { type: 'text/yaml' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${animationName}.yml`;
+      a.download = 'animations.yml';
       a.click();
       URL.revokeObjectURL(url);
     } catch (error) {
@@ -109,20 +110,33 @@ export default function Animate() {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#222224_1px,transparent_1px),linear-gradient(to_bottom,#222224_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,black,transparent)]" />
       
       {/* Top Bar */}
-      <div className="fixed top-0 left-0 right-0 z-20 bg-[#16161a]/80 backdrop-blur-sm border-b border-[#222224]">
+      <div className="fixed top-0 left-0 right-0 z-20 bg-gradient-to-b from-[#16161a] to-[#0d0d0e] border-b border-[#222224]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <Input
-              label="Animation Name"
-              value={animationName}
-              onChange={(e) => setAnimationName(e.target.value)}
-              className="w-48"
-            />
+            <div className="flex items-center gap-4">
+              <Button
+                as="a"
+                href="/"
+                color="primary"
+                variant="light"
+                isIconOnly
+                className="rounded-full"
+              >
+                <Icon icon="lucide:arrow-left" className="w-5 h-5" />
+              </Button>
+              <Input
+                label="Animation Name"
+                value={animationName}
+                onChange={(e) => setAnimationName(e.target.value)}
+                className="w-48"
+              />
+            </div>
             <div className="flex gap-4">
               <Button
                 color="primary"
                 startContent={<Icon icon={isPlaying ? "lucide:pause" : "lucide:play"} />}
                 onClick={playAnimation}
+                className="rounded-full"
               >
                 {isPlaying ? 'Pause' : 'Play'}
               </Button>
@@ -131,6 +145,7 @@ export default function Animate() {
                 variant="bordered"
                 startContent={<Icon icon="lucide:plus" />}
                 onClick={addKeyFrame}
+                className="rounded-full"
               >
                 Add Keyframe
               </Button>
@@ -138,6 +153,7 @@ export default function Animate() {
                 color="primary"
                 startContent={<Icon icon="lucide:download" />}
                 onClick={exportAnimation}
+                className="rounded-full"
               >
                 Export
               </Button>
@@ -150,7 +166,7 @@ export default function Animate() {
       <div className="pt-20 pb-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-4 gap-8">
-            <div className="col-span-3 bg-content1 rounded-lg overflow-hidden shadow-xl" style={{ height: '600px' }}>
+            <div className="col-span-3 bg-gradient-to-b from-[#16161a] to-[#0d0d0e] rounded-lg overflow-hidden shadow-xl border border-[#222224]" style={{ height: '600px' }}>
               <Canvas camera={{ position: [0, 2, 5] }} shadows>
                 <ambientLight intensity={0.3} />
                 <directionalLight 
@@ -167,15 +183,19 @@ export default function Animate() {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-content1 p-6 rounded-lg shadow-xl">
+              <div className="bg-gradient-to-b from-[#16161a] to-[#0d0d0e] p-6 rounded-lg shadow-xl border border-[#222224]">
                 <h3 className="text-lg font-semibold mb-4">Current Frame</h3>
                 {Object.entries(currentFrameData).map(([part, angles]) => (
                   <div key={part} className="mb-6">
-                    <h4 className="text-md font-medium mb-3 capitalize">{part.replace('_', ' ')}</h4>
+                    <h4 className="text-md font-medium mb-3 capitalize bg-gradient-to-br from-orange-500 via-primary-500 to-red-500 bg-clip-text text-transparent">
+                      {part.replace('_', ' ')}
+                    </h4>
                     {Object.entries(angles).map(([axis, value]) => (
                       <div key={axis} className="mb-4">
                         <div className="flex items-center justify-between mb-2">
-                          <label className="text-sm uppercase">{axis}</label>
+                          <label className="text-sm uppercase bg-gradient-to-br from-orange-500 via-primary-500 to-red-500 bg-clip-text text-transparent font-medium">
+                            {axis}
+                          </label>
                           <Input
                             type="number"
                             value={value}
@@ -192,7 +212,7 @@ export default function Animate() {
                           min={-180}
                           max={180}
                           step={1}
-                          className="w-full h-2 bg-content2 rounded-lg appearance-none cursor-pointer accent-primary-500"
+                          className="w-full h-2 bg-[#222224] rounded-lg appearance-none cursor-pointer accent-primary-500"
                         />
                       </div>
                     ))}
@@ -205,7 +225,7 @@ export default function Animate() {
       </div>
 
       {/* Timeline */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#16161a]/80 backdrop-blur-sm border-t border-[#222224] p-4 z-20">
+      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#16161a] to-[#0d0d0e] border-t border-[#222224] p-4 z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-8">
             <div className="flex-grow">
@@ -216,11 +236,11 @@ export default function Animate() {
                 min={0}
                 max={frames.length - 1}
                 step={1}
-                className="w-full h-2 bg-content2 rounded-lg appearance-none cursor-pointer accent-primary-500"
+                className="w-full h-2 bg-[#222224] rounded-lg appearance-none cursor-pointer accent-primary-500"
               />
               <div className="flex justify-between mt-2 text-sm">
-                <span>Frame {currentFrame + 1}</span>
-                <span>Total Frames: {frames.length}</span>
+                <span className="text-default-400">Frame {currentFrame + 1}</span>
+                <span className="text-default-400">Total Frames: {frames.length}</span>
               </div>
             </div>
             <div className="w-32">
