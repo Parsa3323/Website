@@ -23,7 +23,6 @@ export default function ArmorStand({ frame }: ArmorStandProps) {
   useFrame(() => {
     if (!headRef.current || !leftArmRef.current || !rightArmRef.current || !leftLegRef.current || !rightLegRef.current) return;
 
-    // Convert degrees to radians
     const toRad = (deg: number) => (deg * Math.PI) / 180;
 
     headRef.current.rotation.set(toRad(frame.head.x), toRad(frame.head.y), toRad(frame.head.z));
@@ -33,47 +32,63 @@ export default function ArmorStand({ frame }: ArmorStandProps) {
     rightLegRef.current.rotation.set(toRad(frame.right_leg.x), toRad(frame.right_leg.y), toRad(frame.right_leg.z));
   });
 
+  const metalMaterial = new THREE.MeshStandardMaterial({
+    color: '#8c8c8c',
+    metalness: 0.7,
+    roughness: 0.3,
+  });
+
   return (
     <group ref={bodyRef}>
       {/* Base */}
-      <mesh position={[0, 0, 0]}>
+      <mesh position={[0, 0, 0]} receiveShadow castShadow>
         <boxGeometry args={[0.5, 0.1, 0.5]} />
-        <meshStandardMaterial color="#666666" />
+        <meshStandardMaterial {...metalMaterial} />
       </mesh>
 
-      {/* Body */}
-      <mesh position={[0, 0.6, 0]}>
-        <boxGeometry args={[0.2, 0.6, 0.2]} />
-        <meshStandardMaterial color="#888888" />
+      {/* Stand */}
+      <mesh position={[0, 0.6, 0]} receiveShadow castShadow>
+        <cylinderGeometry args={[0.05, 0.05, 1.2, 8]} />
+        <meshStandardMaterial {...metalMaterial} />
       </mesh>
 
       {/* Head */}
-      <mesh ref={headRef} position={[0, 1.1, 0]}>
-        <boxGeometry args={[0.25, 0.25, 0.25]} />
-        <meshStandardMaterial color="#888888" />
-      </mesh>
+      <group ref={headRef} position={[0, 1.1, 0]}>
+        <mesh receiveShadow castShadow>
+          <boxGeometry args={[0.25, 0.25, 0.25]} />
+          <meshStandardMaterial {...metalMaterial} />
+        </mesh>
+      </group>
 
       {/* Arms */}
-      <mesh ref={leftArmRef} position={[0.2, 0.8, 0]}>
-        <boxGeometry args={[0.1, 0.4, 0.1]} />
-        <meshStandardMaterial color="#888888" />
-      </mesh>
+      <group ref={leftArmRef} position={[0.2, 0.8, 0]}>
+        <mesh receiveShadow castShadow>
+          <cylinderGeometry args={[0.04, 0.04, 0.4, 8]} />
+          <meshStandardMaterial {...metalMaterial} />
+        </mesh>
+      </group>
 
-      <mesh ref={rightArmRef} position={[-0.2, 0.8, 0]}>
-        <boxGeometry args={[0.1, 0.4, 0.1]} />
-        <meshStandardMaterial color="#888888" />
-      </mesh>
+      <group ref={rightArmRef} position={[-0.2, 0.8, 0]}>
+        <mesh receiveShadow castShadow>
+          <cylinderGeometry args={[0.04, 0.04, 0.4, 8]} />
+          <meshStandardMaterial {...metalMaterial} />
+        </mesh>
+      </group>
 
       {/* Legs */}
-      <mesh ref={leftLegRef} position={[0.1, 0.2, 0]}>
-        <boxGeometry args={[0.1, 0.4, 0.1]} />
-        <meshStandardMaterial color="#888888" />
-      </mesh>
+      <group ref={leftLegRef} position={[0.1, 0.2, 0]}>
+        <mesh receiveShadow castShadow>
+          <cylinderGeometry args={[0.04, 0.04, 0.4, 8]} />
+          <meshStandardMaterial {...metalMaterial} />
+        </mesh>
+      </group>
 
-      <mesh ref={rightLegRef} position={[-0.1, 0.2, 0]}>
-        <boxGeometry args={[0.1, 0.4, 0.1]} />
-        <meshStandardMaterial color="#888888" />
-      </mesh>
+      <group ref={rightLegRef} position={[-0.1, 0.2, 0]}>
+        <mesh receiveShadow castShadow>
+          <cylinderGeometry args={[0.04, 0.04, 0.4, 8]} />
+          <meshStandardMaterial {...metalMaterial} />
+        </mesh>
+      </group>
     </group>
   );
 }
